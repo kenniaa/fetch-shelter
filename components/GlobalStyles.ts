@@ -2,20 +2,20 @@ import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
   html {
-    height: 100vh;
-    scroll-behavior: smooth;
+    height: 100%;
+    width: 100%;
   }
 
   body {
     padding: 0;
     margin: 0;
-    background: #ffffff;
-    color: #1f1f1f;
-    font-family: 'Fira Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-    height: 100vh;
+    background: #181818;
+    color: #DDD;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    height: 100%;
+    width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
-    min-height: 100vh;
     font-size: 1rem;
     line-height: 1;
   }

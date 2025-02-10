@@ -14,7 +14,7 @@ const Page = (props: PageProps) => {
   } = props;
 
   return (
-    <article>
+    <Article>
       <Header/>
 
       <section className={className}>
@@ -22,16 +22,24 @@ const Page = (props: PageProps) => {
       </section>
 
       <Footer/>
-    </article>
+    </Article>
   );
 }
 
-export default styled(Page)`
+const Article = styled.article`
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
-  padding: 1rem;
-  max-width: 1250px;
-  color: #333;
   line-height: 24px;
+  min-height: 100vh;
+  align-items: stretch;
+`;
+
+export default styled(Page)`
+  padding: 1rem;
+  line-height: 24px;
+  flex-grow: 1;
+  background: #181818;
+  width: calc(100% - 2rem);
+  max-width: 1240px;
+  margin: 0 auto;
 `;

@@ -11,7 +11,7 @@ const Footer = (props: FooterProps) => {
 
   return (
     <footer className={className}>
-      footer
+
     </footer>
   );
 }
@@ -19,7 +19,8 @@ const Footer = (props: FooterProps) => {
 export default styled(Footer)`
   display: flex;
   padding: 1em;
-  background: cadetblue;
+  background: #212121;
   max-height: 160px;
-  margin: 0 auto;
+  width: 100%;
+  flex-shrink: 0;
 `;

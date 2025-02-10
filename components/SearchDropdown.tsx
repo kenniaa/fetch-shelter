@@ -1,58 +1,45 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import useInput from "../hooks/useInput";
-import {useMemo, useState} from "react";
-import {useCombobox, useMultipleSelection} from "downshift";
-import Input from "./Input";
-import Button from "./Button";
+import useInput from '../hooks/useInput';
+import { useMemo } from 'react';
+import { useCombobox, useMultipleSelection } from 'downshift';
+import Input from './Input';
 
 interface SearchDropdownProps extends React.HTMLAttributes<HTMLElement> {
   items: string[];
   label: string,
+  selectedItems: string[],
+  onSetSelectedItems: (newItems) => void,
 }
 
 const SearchDropdown = (props: SearchDropdownProps) => {
   const searchInput = useInput('');
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const filteredItems = useMemo(() => getFilteredItems(selectedItems, searchInput.value), [selectedItems, searchInput.value],)
-
   const {
     className,
     items,
     label,
+    selectedItems,
+    onSetSelectedItems
   } = props;
 
-  const getFilteredItems = (selectedItems: string[], searchInput: string)=> {
-    const lowerCasedInputValue = searchInput.toLowerCase()
-
-    return items.filter(function filterBook(item) {
-      return (!selectedItems.includes(item) && item.toLowerCase().includes(lowerCasedInputValue))
-    })
+  const handleSelectedItem = (selectedItem: string) => {
+    onSetSelectedItems([...selectedItems, selectedItem]);
   }
 
   const {
-    getSelectedItemProps,
     getDropdownProps,
-    removeSelectedItem
   } = useMultipleSelection({
     selectedItems,
-    onStateChange({selectedItems: newSelectedItems, type}) {
-      switch (type) {
-        case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownBackspace:
-        case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownDelete:
-        case useMultipleSelection.stateChangeTypes.DropdownKeyDownBackspace:
-        case useMultipleSelection.stateChangeTypes.FunctionRemoveSelectedItem:
-          setSelectedItems(newSelectedItems)
-          break
-        default:
-          break
-      }
-    },
   });
+
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      return !selectedItems.includes(item) && item.toLowerCase().includes(searchInput.value.toLowerCase());
+    });
+  }, [items, selectedItems, searchInput.value])
 
   const {
     isOpen,
-    getToggleButtonProps,
     getLabelProps,
     getMenuProps,
     getInputProps,
@@ -60,7 +47,7 @@ const SearchDropdown = (props: SearchDropdownProps) => {
     getItemProps,
     selectedItem,
   } = useCombobox({
-    items,
+    items: filteredItems,
     itemToString(item) {
       return item ? item : ''
     },
@@ -92,9 +79,10 @@ const SearchDropdown = (props: SearchDropdownProps) => {
         case useCombobox.stateChangeTypes.ItemClick:
         case useCombobox.stateChangeTypes.InputBlur:
           if (newSelectedItem) {
-            setSelectedItems([...selectedItems, newSelectedItem])
+            handleSelectedItem(newSelectedItem)
             searchInput.onInputChange('')
           }
+
           break
         case useCombobox.stateChangeTypes.InputChange:
           searchInput.onInputChange(newInputValue)
@@ -110,39 +98,29 @@ const SearchDropdown = (props: SearchDropdownProps) => {
       <ScreenreaderOnlyLabel {...getLabelProps()}>{label}</ScreenreaderOnlyLabel>
 
       <div>
-        {selectedItems.map((item, index) => (
-          <span {...getSelectedItemProps({selectedItem: item, index})}>
-            {item}
-            <span
-              onClick={e => {
-                e.stopPropagation()
-                removeSelectedItem(item)
-              }}
-            >
-              &#10005;
-            </span>
-          </span>
-        ))}
-
-        <div>
-          <Input
-            type='text'
-            name='name'
-            label='Name'
-            placeholder='Enter a breed, e.g. "Bichon Frise"'
-            {...searchInput}
-            {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
-          />
-        </div>
+        <Input
+          hideLabel
+          type='text'
+          name='search_dropdown'
+          label='Search dropdown'
+          placeholder='Enter a breed, e.g. "Pomeranian"'
+          {...searchInput}
+          {...getInputProps(getDropdownProps({ preventKeyAction: isOpen }))}
+        />
 
         {isOpen &&
-          <List {...getMenuProps()}>
+          <List
+            showList={isOpen && !!filteredItems.length}
+            {...getMenuProps()}
+          >
             {filteredItems.map((item, index) => (
               <ListItem
+                isHighlighted={index === highlightedIndex}
+                isSelected={item === selectedItem}
                 key={`${item}-${index}`}
-
+                {...getItemProps({item, index})}
               >
-
+                {item}
               </ListItem>
             ))}
           </List>
@@ -152,28 +130,39 @@ const SearchDropdown = (props: SearchDropdownProps) => {
   );
 }
 
-const ListItem = styled.li`
-  display: grid;
-  grid-template-columns: 1em 1fr;
-  grid-gap: 0.5em;
-  align-items: center;
+interface ListItemProps {
+  isHighlighted: boolean,
+  isSelected: boolean,
+}
+
+const ListItem = styled.li<ListItemProps>`
   padding: 0.5em;
+  width: 100%;
+  color: #DDD;
+
+  ${({ isHighlighted }) => isHighlighted && `
+    background: #333333;
+  `};
 `;
 
-const List = styled.ul`
-    position: absolute;
-    background: #FFFFFF;
-    border-radius: 8px;
-    list-style: none;
-    top: 101%;
-    bottom: unset;
-    overflow-y: auto;
-    max-height: 30em;
-    overflow-x: hidden;
-    margin-top: 0;
-    &:focus {
-      outline: none;
-    }
+interface ListProps {
+  showList: boolean,
+}
+const List = styled.ul<ListProps>`
+  position: absolute;
+  display: block;
+  background: #212121;
+  border-radius: 8px;
+  border: 1px solid #555;
+  list-style: none;
+  top: 100%;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 30em;
+  overflow-x: hidden;
+  margin-top: 0.5em;
+  z-index: 99;
+  ${props => !props.showList && 'display: hidden'}
 `;
 
 const ScreenreaderOnlyLabel = styled.label`
@@ -188,15 +177,8 @@ const ScreenreaderOnlyLabel = styled.label`
 export default styled(SearchDropdown)`
   position: relative;
   display: block;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 1rem;
-  border: 1px solid #DDD;
   color: #333;
-  background: grey;
   cursor: pointer;
-
-  &:focus-within, &:hover {
-    outline: 1px dashed purple;
-    outline-offset: 3px;
-  }
 `;

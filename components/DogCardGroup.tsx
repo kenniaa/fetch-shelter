@@ -1,13 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {useEffect, useState} from "react";
-import getDogInfo from "../rest/dogs/getDogInfo";
-import DogCard from "./DogCard";
-import { Dog } from "../lib/dataModels";
+import {useEffect, useState} from 'react';
+import getDogInfo from '../rest/dogs/getDogInfo';
+import DogCard from './DogCard';
+import { Dog } from '../lib/dataModels';
 
 interface CardGroupProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
-  itemIds: string[]
+  itemIds: string[],
+  column: boolean
 }
 
 const DogCardGroup = (props: CardGroupProps) => {
@@ -54,6 +55,9 @@ export default styled(DogCardGroup)`
   max-width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   grid-auto-rows: minmax(150px, auto);
-  grid-gap: 1em;
-  margin-top: 1em;
+  grid-gap: 1rem;
+
+  ${({ column }) => column && `
+    grid-template-columns: 1fr;
+  `};
 `;

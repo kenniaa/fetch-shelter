@@ -1,16 +1,5 @@
 import * as React from 'react';
-import {createContext, Reducer, useContext, useReducer, useState} from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import fetch from 'isomorphic-unfetch';
-import { useRouter } from 'next/router';
-import { MoneyFactory } from '~/lib/types/money';
-
-import DefaultPhase from '~/components/feature/crates/v2/Phases/legacy/DefaultPhase';
-import getCrate from '~/rest/crates/getCrate';
-import getPhases from '~/rest/crates/getPhases';
-
-import { ProfileContext } from '~/components/ProfileContext';
-import getPhaseMembers from "~/rest/phase/getPhaseMembers";
+import {createContext, useState} from 'react';
 
 interface ContextProps {
   setFavorites: (favorites: string[]) => void

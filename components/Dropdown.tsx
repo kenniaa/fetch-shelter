@@ -47,51 +47,48 @@ const Dropdown = (props: DropdownProps) => {
     <div className={className}>
       <ScreenreaderOnlyLabel {...getLabelProps()}>{label}</ScreenreaderOnlyLabel>
 
-      <Button
-        {...getToggleButtonProps()}
-      >
-        <div>
-          <span>{selectedItem ? itemToString(selectedItem) : label}</span>
-        </div>
-      </Button>
+      <div>
+        <Button
+          {...getToggleButtonProps()}
+        >
+          <div>
+            {selectedItem ? `Sort by: ${itemToString(selectedItem)}` : label}
+          </div>
+        </Button>
 
-      <Menu
-        isOpen={isOpen}
-        {...getMenuProps()}
-      >
-        {isOpen && items.map((option, index) => (
-          <ListItem
-            hoveredItem={highlightedIndex === index}
-            key={`${option?.label}${index}`}
-            {...getItemProps({
-              item: option,
-              index
-            })}
-          >
-            {option?.icon &&
-              <span>
-                *
-              </span>
-            }
-            <span>{option?.label}</span>
-          </ListItem>
-        ))}
-      </Menu>
+        <Menu
+          isOpen={isOpen}
+          {...getMenuProps()}
+        >
+          {isOpen && items.map((option, index) => (
+            <ListItem
+              isHighlighted={highlightedIndex === index}
+              key={`${option?.label}${index}`}
+              {...getItemProps({
+                item: option,
+                index
+              })}
+            >
+              <span>{option?.label}</span>
+            </ListItem>
+          ))}
+        </Menu>
+      </div>
     </div>
   );
 }
 
 interface ListItemProps {
-  hoveredItem: boolean
+  isHighlighted: boolean
 }
 
 const ListItem = styled.li<ListItemProps>`
-  display: flex;
-  align-items: baseline;
   padding: 0.5em;
-  
-  ${({ hoveredItem, theme }) => hoveredItem && `
-    background: #DDD;
+  width: 100%;
+  color: #DDD;
+
+  ${({ isHighlighted }) => isHighlighted && `
+    background: #333333;
   `};
 `;
 
@@ -101,17 +98,15 @@ interface MenuProps {
 
 const Menu = styled.ul<MenuProps>`
   position: absolute;
-  background: #FFFFFFFF;
+  background: #212121;
   border-radius: 8px;
-  list-style: none;
+  border: 1px solid #555;
   overflow-y: auto;
-  max-height: 30em;
-  z-index: 2;
+  z-index: 99;
   overflow-x: hidden;
+  width: 100%;
   margin-top: 0.5em;
   ${({ isOpen }) => !isOpen && 'display: none;'};
-
-  border: ${({ isOpen }) => isOpen ? `1px solid #DDD}` : 'none'};
 
   &:focus {
     outline: none;
@@ -119,7 +114,7 @@ const Menu = styled.ul<MenuProps>`
 `;
 
 const ScreenreaderOnlyLabel = styled.label`
-  position:absolute;
+  position: absolute;
   left:-10000px;
   top:auto;
   width:1px;
@@ -128,5 +123,5 @@ const ScreenreaderOnlyLabel = styled.label`
 `;
 
 export default styled(Dropdown)`
-
+  position: relative;
 `;

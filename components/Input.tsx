@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { ChangeEvent, Ref } from 'react';
+import { Ref } from 'react';
 
 interface InputProps extends React.HTMLAttributes<HTMLElement> {
   onInputChange: (value: string) => void,
@@ -19,12 +19,8 @@ const Input = (props: InputProps)=> {
   const {
     onInputChange,
     disabled,
-    placeholder,
-    name,
     error,
-    value,
     label,
-    type,
     hideLabel,
     ref
   } = props;
@@ -38,15 +34,11 @@ const Input = (props: InputProps)=> {
         {label}
       </Label>
 
-      <input
+      <StyledInput
         ref={ref}
         id={label}
         onChange={(e) => onInputChange(e.target.value)}
         disabled={disabled}
-        placeholder={placeholder}
-        name={name}
-        value={value}
-        type={type}
         aria-label={label}
         {...props}
       />
@@ -60,11 +52,30 @@ const Input = (props: InputProps)=> {
   )
 }
 
+const StyledInput = styled.input`
+  background: #2F2F2F;
+  border: 1px solid #2F2F2F;
+  border-radius: 6px;
+  padding: 0.5em 0.75em;
+  color: #DDD;
+  font-size: inherit;
+
+  &:focus {
+    outline: 1px dashed #AAACD5;
+    outline-offset: 3px;
+  }
+
+  &::placeholder {
+    color: #888;
+  }
+`;
+
 interface LabelProps {
   hideLabel?: boolean
 }
 
 const Label = styled.label<LabelProps>`
+  margin-bottom: 0.25rem;
     ${({ hideLabel }) => hideLabel && `
       clip: rect(0 0 0 0);
       clip-path: inset(50%);
@@ -79,13 +90,13 @@ const Label = styled.label<LabelProps>`
 const ErrorMessage = styled.div`
   font-size: 0.8em;
   text-align: left;
-  color: red;
+  color: #FF5555;
 `;
 
 const Wrapper = styled.div`
-  border-radius: 6px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 export default Input;

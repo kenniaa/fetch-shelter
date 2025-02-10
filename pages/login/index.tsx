@@ -22,8 +22,8 @@ export default function Login() {
         //TODO: handle error
       }
 
-      // router.refresh();
-      // router.push('/')
+      router.refresh();
+      router.push('/')
     } catch (error) {
       console.error(error);
       //TODO: handle error

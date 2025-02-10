@@ -4,7 +4,7 @@ import { Dog } from '../lib/dataModels';
 import Image from 'next/image'
 import {useContext} from "react";
 import {FavoritesContext} from "../contexts/FavoritesContext";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { FaHeart, FaDog, FaMapMarkerAlt, FaRegHeart, FaBirthdayCake} from "react-icons/fa";
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
   item: Dog
@@ -34,51 +34,104 @@ const DogCard = (props: CardProps) => {
     setFavorites([...favorites, item.id]);
   }
 
+  const getAge = (age) => {
+    if (age < 1) {
+      return 'Under 1 year old'
+    }
+
+    if (age === 1) {
+      return '1 year old'
+    }
+
+    return `${age} years old`
+  }
+
   return (
     <li
       className={className}
     >
-     <CardMain>
-       <Image
-         width={500}
-         height={500}
-         sizes='100vw'
-         style={{
+      <CardMain>
+        <Image
+          width={500}
+          height={500}
+          sizes='100vw'
+          style={{
            width: '100%',
            height: '300px',
            maxHeight: '300px',
            objectFit: 'cover',
            borderRadius: '6px',
-         }}
-         src={item.img}
-         alt={`Picture of ${item.name}`}
-       />
+          }}
+          src={item.img}
+          alt={`Picture of ${item.name}`}
+        />
 
-       <Favorite
-         onClick={() => handleFavoriteClick()}
-         isInFavorites={isInFavorites}
-         // aria-hidden={ariaHidden}
-         // tabIndex={tabIndex}
-         aria-label='Bookmark item'
-       >
-         {isInFavorites ?
-           <FaBookmark fill='Red' />
-           :
-           <FaRegBookmark />
-         }
-       </Favorite>
-     </CardMain>
+        <Favorite
+          onClick={() => handleFavoriteClick()}
+          isInFavorites={isInFavorites}
+          aria-label='Bookmark item'
+        >
+           {isInFavorites ?
+             <FaHeart fill='Red' />
+             :
+             <FaRegHeart />
+           }
+        </Favorite>
+      </CardMain>
 
       <CardInfo>
-        {item.name}
-        {item.age}
-        <br />
-        {item.breed}
-        {item.zip_code}
+        <Name>
+          {item.name}
+        </Name>
+
+        <Details>
+          <DetailBox>
+            <FaBirthdayCake /> {getAge(item.age)}
+          </DetailBox>
+
+          <DetailBox>
+            <FaDog /> {item.breed}
+          </DetailBox>
+
+          <DetailBox>
+            <FaMapMarkerAlt /> {item.zip_code}
+          </DetailBox>
+        </Details>
       </CardInfo>
     </li>
   );
 }
+
+const Details = styled.div`
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 0.5rem;
+`;
+
+const DetailBox= styled.div`
+  background: rgba(68, 68, 68, 0.65);
+  color: #cccccc;
+  border: 1px solid #555;
+  padding: 0 4px;
+  border-radius: 4px;
+  width: max-content;
+  display: flex;
+  align-items: center;
+  grid-gap: 0.25rem;
+`;
+
+const CardHeader = styled.div`
+  border-radius: 4px;
+  width: auto;
+  padding: 0 0.25em;
+  display: flex;
+  align-items: baseline;
+`;
+
+const Name = styled.div`
+  font-size: 20px
+`;
 
 interface FavoriteProps {
   isInFavorites?: boolean,
@@ -112,18 +165,12 @@ const CardMain = styled.div`
 
 const CardInfo = styled.div`
   grid-area: cardinfo;
+  font-size: 15px;
+  margin-top: 0.5rem;
 `;
 
 export default styled(DogCard)`
-  background: #f0f0f0;
+  background: #212121;
   padding: 0.75em;
   border-radius: 6px;
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr;
-  grid-row-gap: 10px;
-  grid-auto-flow: dense;
-  grid-template-areas:
-    'cardmain'
-    'cardinfo';
 `;

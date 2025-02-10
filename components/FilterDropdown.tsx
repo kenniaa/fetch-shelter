@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { useState } from 'react';
-import {Menu, MenuItem, MenuGroup, FocusableItem, ClickEvent, MenuChangeEvent} from '@szhsin/react-menu';
+import {Menu, MenuItem, MenuGroup, ClickEvent, MenuChangeEvent} from '@szhsin/react-menu';
 import {
   menuSelector,
   menuItemSelector,
@@ -10,69 +9,102 @@ import {
   menuContainerSelector,
 } from '@szhsin/react-menu/style-utils';
 import '@szhsin/react-menu/dist/transitions/slide.css';
-import { FaCheck } from "react-icons/fa";
+import { FaTimes } from 'react-icons/fa';
 
 import Input from './Input';
+import Button from './Button';
+import useInput from '../hooks/useInput';
+import {useMemo} from 'react';
 
 interface FilterDropdownProps extends React.HTMLAttributes<HTMLElement>  {
   options: string[],
   onOptionSelect: (option: string) => void,
-  buttonLabel: string,
-  isOptionSelected?: (option: string) => boolean,
+  label: string,
   filterPlaceholder?: string,
+  selectedOptions: string[],
+  onRemoveOption: (option: string) => void,
+  onSearch: () => void
 }
 
 const FilterDropdown = (props: FilterDropdownProps) => {
-  const [filter, setFilter] = useState('');
+  const filterInput = useInput('');
 
   const {
     className,
     options,
     onOptionSelect,
-    buttonLabel,
-    isOptionSelected,
+    label,
     filterPlaceholder,
+    selectedOptions,
+    onRemoveOption,
+    onSearch
   } = props;
+
+  const isOptionSelected = (option: string) => selectedOptions.includes(option)
+
+  const filteredItems = useMemo(() => {
+    return options.filter(item => {
+      return !selectedOptions.includes(item) && item.toLowerCase().includes(filterInput.value.toLowerCase());
+    });
+  }, [options, selectedOptions, filterInput.value])
 
   return (
     <div className={className}>
       <Menu
         menuButton={
-          <DropdownButton>
-            <Label>
-              {buttonLabel}
-            </Label>
-          </DropdownButton>
+          <Button>
+            {label}
+          </Button>
         }
         key='filter-multi-select'
+        arrow
         direction='bottom'
         align='start'
-        position='auto'
+        position='anchor'
         setDownOverflow
         overflow='auto'
-        boundingBoxPadding='20'
         transition
-        onMenuChange={(e: MenuChangeEvent) => e.open && setFilter('')}
+        boundingBoxPadding='20'
+        onMenuChange={(e: MenuChangeEvent) => e.open && filterInput.onInputChange('')}
       >
-        <FocusableItem>
-          {({ ref }) => (
-            <Input
-              hideLabel
-              label='Filter by breed'
-              name='filter'
-              ref={ref}
-              id='filter-input'
-              type='text'
-              placeholder={filterPlaceholder ? filterPlaceholder : 'Type to filter'}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          )}
-        </FocusableItem>
+        {!!selectedOptions.length &&
+          <SelectedItems>
+            {selectedOptions.map((option, index) => (
+              <Item key={`${option}-${index}`}>
+                {option}
+
+                <Button
+                  bare
+                  onClick={() => onRemoveOption(option)}
+                >
+                  <FaTimes />
+                </Button>
+              </Item>
+            ))}
+          </SelectedItems>
+        }
+
+        <FilterBar>
+          <Input
+            hideLabel
+            label='Filter by breed'
+            name='filter'
+            id='filter-input'
+            type='text'
+            placeholder={filterPlaceholder ? filterPlaceholder : 'Type to filter'}
+            {...filterInput}
+          />
+
+          <Button
+            primary
+            onClick={() => onSearch()}
+          >
+            Search
+          </Button>
+        </FilterBar>
 
         <MenuGroup takeOverflow>
-          {options.filter((option: string) => option.toUpperCase().includes(filter.trim().toUpperCase()))
-            .map((option: string, index: number) => (
+          {filteredItems.map((option: string, index: number) => (
               <MenuItem
                 onClick={(e: ClickEvent) => {
                   e.stopPropagation = true;
@@ -81,14 +113,6 @@ const FilterDropdown = (props: FilterDropdownProps) => {
                 }}
                 key={`${option}-${index}`}
               >
-                {!!isOptionSelected &&
-                  <Check checked={isOptionSelected(option)}>
-                    {isOptionSelected(option) &&
-                      <FaCheck fill='White' />
-                    }
-                  </Check>
-                }
-
                 {option}
               </MenuItem>
             ))}
@@ -98,24 +122,29 @@ const FilterDropdown = (props: FilterDropdownProps) => {
   )
 }
 
-const DropdownButton = styled.button`
-  max-width: 100%;
-  margin: 0.45em 0;
-  font-size: 15px;
-  font-weight: 400;
-  padding: 0.55em 1em;
-  background-color: #f0f0f0;
-  border: 1px solid transparent;
-  border-radius: 8px !important;
-  font-family: 'Fira Sans', sans-serif;
-  line-height: 1.2;
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  text-align: center;
+const FilterBar = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  grid-gap: 0.5rem;
+`;
+
+const Item = styled.div`
+  background: #424242;
+  color: #FFF;
+  padding: 4px 6px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  grid-gap: 4px;
+`;
+
+const SelectedItems = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 14px;
 `;
 
 interface CheckProps {
@@ -138,14 +167,6 @@ const Check = styled.span<CheckProps>`
   margin-right: 0.5em;
 `;
 
-const Label = styled.div`
-  width: 100%;
-  text-align: left;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-`;
-
 const StyledDropdown = styled(FilterDropdown)`
   position: relative;
   width: 100%;
@@ -155,25 +176,29 @@ const StyledDropdown = styled(FilterDropdown)`
   }
 
   ${menuSelector?.name} {
+    position: absolute;
     box-sizing: border-box;
     z-index: 100;
     list-style: none;
     user-select: none;
-    padding: 4px;
-    height: max-content;
-    max-height: 400px;
-    overflow-y: auto;
-    font-size: 15px;
-    border: 1px solid #DDD;
+    height: auto;
+    color: inherit;
+    min-height: 50px;
     border-radius: 6px;
-    min-width: 10em;
-    width: 100%;
-    background: #f7f8fa;
-  }
+    min-width: 10rem;
+    box-shadow: none;
+    padding: 0.5em;
+    width: 450px;
+    font-size: 16px;
+    background: #212121;
+    border: 1px solid #555;
 
-  a {
-    &:hover {
-      filter: unset;
+    @media screen and (max-width: 500px) {
+      width: 350px;
+    }
+
+    @media screen and (max-width: 375px) {
+      width: 250px;
     }
   }
   
@@ -190,8 +215,8 @@ const StyledDropdown = styled(FilterDropdown)`
   }
 
   ${menuItemSelector.hover} {
-    text-decoration: none !important;
-    background: #DDD;
+    text-decoration: none;
+    background: #333333;
     outline: none;
   }
 
@@ -221,6 +246,23 @@ const StyledDropdown = styled(FilterDropdown)`
     height: 1px;
     margin: 5px 6px;
     background: #DDD;
+  }
+
+  .szh-menu__arrow {
+    display: block;
+    position: absolute;
+    left: 80px;
+    top: -0.375rem;
+    -webkit-transform: translateX(-50%) rotate(45deg);
+    transform: translateX(-50%) rotate(45deg);
+    box-sizing: border-box;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: #212121;
+    border-color: #555555 transparent transparent #555555;
+    border-style: solid;
+    border-width: 1px;
+    z-index: -1;
   }
 `;
 

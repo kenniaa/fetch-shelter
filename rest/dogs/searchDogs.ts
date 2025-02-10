@@ -12,8 +12,8 @@ interface SearchObject {
   zipCodes?: string[],
   ageMin?: number,
   ageMax?: number,
-  sortBy: SortObject,
-  next: string
+  sortBy?: SortObject,
+  next?: string,
 }
 
 export default async function searchDogs(searchObject: SearchObject) {
@@ -27,7 +27,7 @@ export default async function searchDogs(searchObject: SearchObject) {
 
   if (searchObject.zipCodes) {
     searchObject.zipCodes.map(zipCode => {
-      queryParams.append('zipCodes', zipCode);
+      queryParams.append('zipCodes', `${zipCode}`);
     })
   }
 
