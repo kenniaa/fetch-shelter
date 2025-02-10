@@ -7,7 +7,7 @@ import loginUser from '../../rest/auth/loginUser';
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  const router: any = useRouter();
+  // const router: any = useRouter();
 
   const emailInput = useInput('');
   const nameInput = useInput('');
@@ -22,8 +22,8 @@ export default function Login() {
         //TODO: handle error
       }
 
-      router.refresh();
-      router.push('/')
+      // router.refresh();
+      // router.push('/')
     } catch (error) {
       console.error(error);
       //TODO: handle error

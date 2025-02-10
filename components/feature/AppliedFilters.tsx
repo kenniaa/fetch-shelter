@@ -25,35 +25,33 @@ const AppliedFilters = (props: AppliedFiltersProps) => {
 
   return (
     <div className={className}>
-      <AppliedFilters>
-        Applied Filters:
+      Applied Filters:
 
-        {zipCodes?.map((code, index) => (
+      {zipCodes?.map((code, index) => (
           <Filter>
             {code}
 
             <Button
-              bare
-              // onClick={() => onFilterByZipCode()}
+                bare
+                // onClick={() => onFilterByZipCode()}
             >
               <FaTimes />
             </Button>
           </Filter>
-        ))}
+      ))}
 
-        {selectedBreeds?.map((breed, index) => (
+      {selectedBreeds?.map((breed, index) => (
           <Filter>
             {breed}
 
             <Button
-              bare
-              // onClick={() => onRemoveOption(option)}
+                bare
+                // onClick={() => onRemoveOption(option)}
             >
               <FaTimes />
             </Button>
           </Filter>
-        ))}
-      </AppliedFilters>
+      ))}
     </div>
   );
 }

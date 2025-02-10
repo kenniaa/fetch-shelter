@@ -6,9 +6,9 @@ import DogCard from './DogCard';
 import { Dog } from '../lib/dataModels';
 
 interface CardGroupProps extends React.HTMLAttributes<HTMLElement> {
-  children?: React.ReactNode;
+  children?: React.ReactNode,
   itemIds: string[],
-  column: boolean
+  column?: boolean
 }
 
 const DogCardGroup = (props: CardGroupProps) => {
