@@ -1,34 +1,31 @@
-import fetch from 'isomorphic-unfetch';
-
 interface SortObject {
-  value: string,
-  label: string,
-  direction: string,
-  field: string,
-  icon: string
+  value: string;
+  label: string;
+  direction: string;
+  field: string;
 }
 interface SearchObject {
-  breeds?: string[],
-  zipCodes?: string[],
-  ageMin?: number,
-  ageMax?: number,
-  sortBy?: SortObject,
-  next?: string,
+  breeds?: string[];
+  zipCodes?: string[];
+  ageMin?: number;
+  ageMax?: number;
+  sortBy?: SortObject;
+  next?: string;
 }
 
 export default async function searchDogs(searchObject: SearchObject) {
   const queryParams = new URLSearchParams();
 
   if (searchObject.breeds) {
-    searchObject.breeds.map(breed => {
+    searchObject.breeds.map((breed) => {
       queryParams.append('breeds', breed);
-    })
+    });
   }
 
   if (searchObject.zipCodes) {
-    searchObject.zipCodes.map(zipCode => {
+    searchObject.zipCodes.map((zipCode) => {
       queryParams.append('zipCodes', `${zipCode}`);
-    })
+    });
   }
 
   if (searchObject.ageMin) {
@@ -40,15 +37,21 @@ export default async function searchDogs(searchObject: SearchObject) {
   }
 
   if (searchObject.sortBy) {
-    queryParams.append('sort', `${searchObject.sortBy.field}:${searchObject.sortBy.direction}`);
+    queryParams.append(
+      'sort',
+      `${searchObject.sortBy.field}:${searchObject.sortBy.direction}`,
+    );
   }
 
   if (searchObject.next) {
     queryParams.set('next', searchObject.next);
   }
 
-  return fetch(`https://frontend-take-home-service.fetch.com/dogs/search?${queryParams}`, {
-    method: 'GET',
-    credentials: 'include'
-  });
+  return fetch(
+    `https://frontend-take-home-service.fetch.com/dogs/search?${queryParams}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  );
 }

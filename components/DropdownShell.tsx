@@ -1,36 +1,23 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {ReactNode} from "react";
-import { Menu, FocusableItem } from '@szhsin/react-menu';
-import {
-  menuSelector,
-  menuItemSelector,
-} from '@szhsin/react-menu/style-utils';
+import { ReactNode } from 'react';
+import { Menu } from '@szhsin/react-menu';
+import { menuSelector } from '@szhsin/react-menu/style-utils';
 import '@szhsin/react-menu/dist/transitions/slide.css';
-import Button from "./Button";
+import Button from './Button';
 
 interface DropdownShellProps extends React.HTMLAttributes<HTMLElement> {
-  children: ReactNode,
-  label: string
+  children: ReactNode;
+  label: string | React.ReactElement;
 }
 
 const DropdownShell = (props: DropdownShellProps) => {
-  const {
-    className,
-    label,
-    children
-  } = props;
+  const { className, label, children } = props;
 
   return (
-    <div
-      className={className}
-    >
+    <div className={className}>
       <Menu
-        menuButton={
-          <Button>
-            {label}
-          </Button>
-        }
+        menuButton={<Button>{label}</Button>}
         arrow
         direction='bottom'
         align='start'
@@ -45,7 +32,7 @@ const DropdownShell = (props: DropdownShellProps) => {
       </Menu>
     </div>
   );
-}
+};
 
 export default styled(DropdownShell)`
   ${menuSelector?.name} {
@@ -60,7 +47,7 @@ export default styled(DropdownShell)`
     border-radius: 6px;
     min-width: 10rem;
     box-shadow: none;
-    padding: 0.5em;
+    padding: 0.5rem;
     width: 450px;
     font-size: 16px;
     background: #212121;

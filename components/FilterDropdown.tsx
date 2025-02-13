@@ -1,6 +1,12 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {Menu, MenuItem, MenuGroup, ClickEvent, MenuChangeEvent} from '@szhsin/react-menu';
+import {
+  Menu,
+  MenuItem,
+  MenuGroup,
+  ClickEvent,
+  MenuChangeEvent,
+} from '@szhsin/react-menu';
 import {
   menuSelector,
   menuItemSelector,
@@ -14,16 +20,16 @@ import { FaTimes } from 'react-icons/fa';
 import Input from './Input';
 import Button from './Button';
 import useInput from '../hooks/useInput';
-import {useMemo} from 'react';
+import { useMemo } from 'react';
 
-interface FilterDropdownProps extends React.HTMLAttributes<HTMLElement>  {
-  options: string[],
-  onOptionSelect: (option: string) => void,
-  label: string,
-  filterPlaceholder?: string,
-  selectedOptions: string[],
-  onRemoveOption: (option: string) => void,
-  onSearch: () => void
+interface FilterDropdownProps extends React.HTMLAttributes<HTMLElement> {
+  options: string[];
+  onOptionSelect: (option: string) => void;
+  label: string | React.ReactElement;
+  filterPlaceholder?: string;
+  selectedOptions: string[];
+  onRemoveOption: (option: string) => void;
+  onSearch: () => void;
 }
 
 const FilterDropdown = (props: FilterDropdownProps) => {
@@ -37,25 +43,24 @@ const FilterDropdown = (props: FilterDropdownProps) => {
     filterPlaceholder,
     selectedOptions,
     onRemoveOption,
-    onSearch
+    onSearch,
   } = props;
 
-  const isOptionSelected = (option: string) => selectedOptions.includes(option)
+  // const isOptionSelected = (option: string) => selectedOptions.includes(option)
 
   const filteredItems = useMemo(() => {
-    return options.filter(item => {
-      return !selectedOptions.includes(item) && item.toLowerCase().includes(filterInput.value.toLowerCase());
+    return options.filter((item) => {
+      return (
+        !selectedOptions.includes(item) &&
+        item.toLowerCase().includes(filterInput.value.toLowerCase())
+      );
     });
-  }, [options, selectedOptions, filterInput.value])
+  }, [options, selectedOptions, filterInput.value]);
 
   return (
     <div className={className}>
       <Menu
-        menuButton={
-          <Button>
-            {label}
-          </Button>
-        }
+        menuButton={<Button>{label}</Button>}
         key='filter-multi-select'
         arrow
         direction='bottom'
@@ -65,24 +70,23 @@ const FilterDropdown = (props: FilterDropdownProps) => {
         overflow='auto'
         transition
         boundingBoxPadding='20'
-        onMenuChange={(e: MenuChangeEvent) => e.open && filterInput.onInputChange('')}
+        onMenuChange={(e: MenuChangeEvent) =>
+          e.open && filterInput.onInputChange('')
+        }
       >
-        {!!selectedOptions.length &&
+        {!!selectedOptions.length && (
           <SelectedItems>
             {selectedOptions.map((option, index) => (
               <Item key={`${option}-${index}`}>
                 {option}
 
-                <Button
-                  bare
-                  onClick={() => onRemoveOption(option)}
-                >
+                <Button bare onClick={() => onRemoveOption(option)}>
                   <FaTimes />
                 </Button>
               </Item>
             ))}
           </SelectedItems>
-        }
+        )}
 
         <FilterBar>
           <Input
@@ -91,36 +95,35 @@ const FilterDropdown = (props: FilterDropdownProps) => {
             name='filter'
             id='filter-input'
             type='text'
-            placeholder={filterPlaceholder ? filterPlaceholder : 'Type to filter'}
+            placeholder={
+              filterPlaceholder ? filterPlaceholder : 'Type to filter'
+            }
             {...filterInput}
           />
 
-          <Button
-            primary
-            onClick={() => onSearch()}
-          >
+          <Button primary onClick={() => onSearch()}>
             Search
           </Button>
         </FilterBar>
 
         <MenuGroup takeOverflow>
           {filteredItems.map((option: string, index: number) => (
-              <MenuItem
-                onClick={(e: ClickEvent) => {
-                  e.stopPropagation = true;
-                  onOptionSelect(option);
-                  e.keepOpen = true;
-                }}
-                key={`${option}-${index}`}
-              >
-                {option}
-              </MenuItem>
-            ))}
+            <MenuItem
+              onClick={(e: ClickEvent) => {
+                e.stopPropagation = true;
+                onOptionSelect(option);
+                e.keepOpen = true;
+              }}
+              key={`${option}-${index}`}
+            >
+              {option}
+            </MenuItem>
+          ))}
         </MenuGroup>
       </Menu>
     </div>
-  )
-}
+  );
+};
 
 const FilterBar = styled.div`
   display: flex;
@@ -131,7 +134,7 @@ const FilterBar = styled.div`
 
 const Item = styled.div`
   background: #424242;
-  color: #FFF;
+  color: #fff;
   padding: 4px 6px;
   border-radius: 6px;
   display: flex;
@@ -145,26 +148,6 @@ const SelectedItems = styled.div`
   grid-gap: 0.5rem;
   margin: 0.5rem 0;
   font-size: 14px;
-`;
-
-interface CheckProps {
-  checked?: boolean,
-  disabled?: boolean
-}
-
-const Check = styled.span<CheckProps>`
-  width: 1em;
-  height: 1em;
-  border-radius: 3px;
-  border: 1px solid ${props => props.checked ? `#413d87 !important` : '#cccccc' };
-  border: 1px solid ${props => props.disabled ? `#CCC !important` : '#cccccc' };
-  background-color: ${props => props.checked ? `#413d87 !important` : '#ffffff' };
-  background-color: ${props => props.disabled ? `#CCC !important` : '#ffffff' };
-  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 0.5em;
 `;
 
 const StyledDropdown = styled(FilterDropdown)`
@@ -187,7 +170,7 @@ const StyledDropdown = styled(FilterDropdown)`
     border-radius: 6px;
     min-width: 10rem;
     box-shadow: none;
-    padding: 0.5em;
+    padding: 0.5rem;
     width: 450px;
     font-size: 16px;
     background: #212121;
@@ -201,7 +184,7 @@ const StyledDropdown = styled(FilterDropdown)`
       width: 250px;
     }
   }
-  
+
   ${menuItemSelector.name} {
     font-weight: 400;
     cursor: pointer;
@@ -228,7 +211,7 @@ const StyledDropdown = styled(FilterDropdown)`
     a {
       display: block;
       text-decoration: none;
-      
+
       &:focus {
         outline: none;
       }
@@ -245,7 +228,7 @@ const StyledDropdown = styled(FilterDropdown)`
   ${menuDividerSelector.name} {
     height: 1px;
     margin: 5px 6px;
-    background: #DDD;
+    background: #ddd;
   }
 
   .szh-menu__arrow {

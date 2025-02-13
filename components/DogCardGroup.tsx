@@ -1,26 +1,25 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import getDogInfo from '../rest/dogs/getDogInfo';
 import DogCard from './DogCard';
 import { Dog } from '../lib/dataModels';
 
 interface CardGroupProps extends React.HTMLAttributes<HTMLElement> {
-  children?: React.ReactNode,
-  itemIds: string[],
-  column?: boolean
+  children?: React.ReactNode;
+  itemIds: string[];
+  column?: boolean;
+  smallCards?: boolean;
+  noEditing?: boolean;
 }
 
 const DogCardGroup = (props: CardGroupProps) => {
   const [items, setItems] = useState<Dog[]>([]);
 
-  const {
-    className,
-    itemIds
-  } = props;
+  const { className, itemIds, noEditing } = props;
 
   useEffect(() => {
-    fetchDogs()
+    fetchDogs();
   }, [itemIds]);
 
   const fetchDogs = async () => {
@@ -37,27 +36,31 @@ const DogCardGroup = (props: CardGroupProps) => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   return (
-    <ul
-      className={className}
-    >
-      {items.map((item, index) => (
-        <DogCard key={item.id} item={item}/>
+    <ul className={className}>
+      {items.map((item) => (
+        <DogCard noEditing={noEditing} key={item.id} item={item} />
       ))}
     </ul>
   );
-}
+};
 
 export default styled(DogCardGroup)`
   display: grid;
   max-width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(${(props) => (props.smallCards ? '150px' : '350px')}, 1fr)
+  );
   grid-auto-rows: minmax(150px, auto);
   grid-gap: 1rem;
+  margin-top: 1rem;
 
-  ${({ column }) => column && `
+  ${({ column }) =>
+    column &&
+    `
     grid-template-columns: 1fr;
   `};
 `;

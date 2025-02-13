@@ -2,40 +2,34 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 interface ButtonProps extends React.HTMLAttributes<HTMLElement> {
-  onClick?: () => void,
-  disabled?: boolean,
-  type: 'submit' | 'reset' | 'button',
-  value?: string,
-  bare?: boolean,
-  primary?: boolean,
-  secondary?: boolean,
-  margin?: string
+  onClick?: React.MouseEventHandler;
+  disabled?: boolean;
+  value?: string;
+  bare?: boolean;
+  primary?: boolean;
+  secondary?: boolean;
+  margin?: string;
 }
 
 const Button = (props: ButtonProps) => {
-  const {
-    className,
-    children,
-    onClick,
-    disabled,
-  } = props;
+  const { className, children, onClick, disabled } = props;
 
   return (
     <button
       className={className}
-      onClick={() => onClick && !disabled && onClick()}
+      onClick={(event) => onClick && !disabled && onClick(event)}
       disabled={disabled}
       {...props}
     >
       {children}
     </button>
   );
-}
+};
 
 export default styled(Button)`
   border: 1px solid transparent;
   background: #2f2f2f;
-  color: #FFF;
+  color: #fff;
   border-radius: 6px;
   cursor: pointer;
   text-align: center;
@@ -44,23 +38,29 @@ export default styled(Button)`
   justify-content: center;
   padding: 0.45rem 0.5rem;
   font-size: inherit;
-  
-  ${({ margin }) => margin && `
+
+  ${({ margin }) =>
+    margin &&
+    `
     margin: ${margin};
   `};
-  
-  ${({ primary }) => primary && `
+
+  ${({ primary }) =>
+    primary &&
+    `
     background: #413d87;
   `};
 
-  ${({ bare }) => bare && `
+  ${({ bare }) =>
+    bare &&
+    `
     background: transparent;
     color: inherit;
     padding: 4px;
   `};
 
   &:focus {
-    outline: 1px dashed #AAACD5;
+    outline: 1px dashed #aaacd5;
     outline-offset: 3px;
   }
 `;

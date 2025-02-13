@@ -1,15 +1,14 @@
 import * as React from 'react';
-import {createContext, useState} from 'react';
-import SortObject from "../lib/types";
+import { createContext, ReactNode, useState } from 'react';
+import SortObject from '../lib/types';
 
 interface ContextProps {
-  setSelectedBreeds: (value: string[]) => void,
-  setZipCodes: (value: string[]) => void,
-  setSortBy: (value: SortObject) => void,
-  setName: (value: string) => void,
-  selectedBreeds: string[],
-  zipCodes: string[],
-  sortBy: SortObject,
+  setSelectedBreeds: (value: string[]) => void;
+  setZipCodes: (value: string[]) => void;
+  setSortBy: (value: SortObject) => void;
+  selectedBreeds: string[];
+  zipCodes: string[];
+  sortBy: SortObject;
 }
 
 export const SearchQueryContext = createContext<ContextProps>({
@@ -18,11 +17,16 @@ export const SearchQueryContext = createContext<ContextProps>({
   setSortBy: () => {},
   selectedBreeds: [],
   zipCodes: [],
-  sortBy: {},
+  sortBy: {
+    label: '',
+    value: '',
+    field: '',
+    direction: '',
+  },
 });
 
 interface SearchQueryContextProps {
-  children: any
+  children: ReactNode;
 }
 
 export const SearchQueryContextProvider = (props: SearchQueryContextProps) => {
@@ -33,12 +37,9 @@ export const SearchQueryContextProvider = (props: SearchQueryContextProps) => {
     value: 'name-a-z',
     field: 'name',
     direction: 'asc',
-    icon: 'fas fa-sm fa-sort-alpha-down'
   });
 
-  const {
-    children
-  } = props;
+  const { children } = props;
 
   const value = {
     selectedBreeds,
@@ -47,11 +48,11 @@ export const SearchQueryContextProvider = (props: SearchQueryContextProps) => {
     setSelectedBreeds,
     setZipCodes,
     setSortBy,
-  }
+  };
 
   return (
     <SearchQueryContext.Provider value={value}>
       {children}
     </SearchQueryContext.Provider>
-  )
-}
+  );
+};

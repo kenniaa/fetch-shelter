@@ -4,13 +4,14 @@ import { FormEvent } from 'react';
 import useInput from '../../hooks/useInput';
 import styled from 'styled-components';
 import loginUser from '../../rest/auth/loginUser';
-import { useRouter } from 'next/navigation';
+import { setCookie } from 'nookies';
+import { useRouter } from 'next/router';
+import Page from '../../components/Page';
 
 export default function Login() {
-  // const router: any = useRouter();
-
   const emailInput = useInput('');
   const nameInput = useInput('');
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -22,17 +23,21 @@ export default function Login() {
         //TODO: handle error
       }
 
-      // router.refresh();
-      // router.push('/')
+      setCookie(null, 'isLoggedIn', 'true', {
+        maxAge: 30 * 24 * 60 * 60,
+        path: '/',
+      });
+
+      await router.push('/');
     } catch (error) {
       console.error(error);
       //TODO: handle error
     }
-  }
+  };
 
   return (
-    <Center>
-      <form onSubmit={(e: FormEvent) => handleSubmit(e)}>
+    <Page>
+      <Form onSubmit={(e: FormEvent) => handleSubmit(e)}>
         <Input
           type='text'
           name='name'
@@ -49,17 +54,16 @@ export default function Login() {
           {...emailInput}
         />
 
-        <Button type='submit'>Submit</Button>
-      </form>
-    </Center>
-  )
+        <div>
+          <Button>Submit</Button>
+        </div>
+      </Form>
+    </Page>
+  );
 }
 
-const Center = styled.div`
-  width: 100%;
-  max-width: 1240px;
+const Form = styled.form`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: center;
+  grid-gap: 1em;
 `;

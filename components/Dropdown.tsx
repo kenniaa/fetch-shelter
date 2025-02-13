@@ -1,32 +1,24 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {useRef} from "react";
-import {UseSelectSelectedItemChange, useSelect} from "downshift";
-import Button from "./Button";
+import { useSelect } from 'downshift';
+import Button from './Button';
 
 interface ItemObject {
-  label: string,
-  value: string,
-  icon: string,
+  label: string;
+  value: string;
 }
 
 interface DropdownProps extends React.HTMLAttributes<HTMLElement> {
-  items: ItemObject[]
-  selectedItem: ItemObject,
-  onSetItem: (newSelectedItem: ItemObject) => void,
-  label: string
+  items: ItemObject[];
+  selectedItem: ItemObject;
+  onSetItem: (newSelectedItem: ItemObject) => void;
+  label: string;
 }
 
 const Dropdown = (props: DropdownProps) => {
-  const {
-    className,
-    items,
-    selectedItem,
-    onSetItem,
-    label
-  } = props
+  const { className, items, selectedItem, onSetItem, label } = props;
 
-  const itemToString = option => (option ? option?.label : '');
+  const itemToString = (option) => (option ? option?.label : '');
 
   const {
     isOpen,
@@ -34,66 +26,66 @@ const Dropdown = (props: DropdownProps) => {
     getMenuProps,
     highlightedIndex,
     getItemProps,
-    getLabelProps
+    getLabelProps,
   } = useSelect({
     items: items,
     itemToString,
     selectedItem,
-    onSelectedItemChange: ({selectedItem: newSelectedItem}) =>
+    onSelectedItemChange: ({ selectedItem: newSelectedItem }) =>
       onSetItem(newSelectedItem),
-  })
+  });
 
   return (
     <div className={className}>
-      <ScreenreaderOnlyLabel {...getLabelProps()}>{label}</ScreenreaderOnlyLabel>
+      <ScreenreaderOnlyLabel {...getLabelProps()}>
+        {label}
+      </ScreenreaderOnlyLabel>
 
       <div>
-        <Button
-          {...getToggleButtonProps()}
-        >
+        <Button {...getToggleButtonProps()}>
           <div>
             {selectedItem ? `Sort by: ${itemToString(selectedItem)}` : label}
           </div>
         </Button>
 
-        <Menu
-          isOpen={isOpen}
-          {...getMenuProps()}
-        >
-          {isOpen && items.map((option, index) => (
-            <ListItem
-              isHighlighted={highlightedIndex === index}
-              key={`${option?.label}${index}`}
-              {...getItemProps({
-                item: option,
-                index
-              })}
-            >
-              <span>{option?.label}</span>
-            </ListItem>
-          ))}
+        <Menu isOpen={isOpen} {...getMenuProps()}>
+          {isOpen &&
+            items.map((option, index) => (
+              <ListItem
+                isHighlighted={highlightedIndex === index}
+                key={`${option?.label}${index}`}
+                {...getItemProps({
+                  item: option,
+                  index,
+                })}
+              >
+                <span>{option?.label}</span>
+              </ListItem>
+            ))}
         </Menu>
       </div>
     </div>
   );
-}
+};
 
 interface ListItemProps {
-  isHighlighted: boolean
+  isHighlighted: boolean;
 }
 
 const ListItem = styled.li<ListItemProps>`
-  padding: 0.5em;
+  padding: 0.5rem;
   width: 100%;
-  color: #DDD;
+  color: #ddd;
 
-  ${({ isHighlighted }) => isHighlighted && `
+  ${({ isHighlighted }) =>
+    isHighlighted &&
+    `
     background: #333333;
   `};
 `;
 
 interface MenuProps {
-  isOpen: boolean
+  isOpen: boolean;
 }
 
 const Menu = styled.ul<MenuProps>`
@@ -105,7 +97,7 @@ const Menu = styled.ul<MenuProps>`
   z-index: 99;
   overflow-x: hidden;
   width: 100%;
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
   ${({ isOpen }) => !isOpen && 'display: none;'};
 
   &:focus {
@@ -115,10 +107,10 @@ const Menu = styled.ul<MenuProps>`
 
 const ScreenreaderOnlyLabel = styled.label`
   position: absolute;
-  left:-10000px;
-  top:auto;
-  width:1px;
-  height:1px;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
 `;
 

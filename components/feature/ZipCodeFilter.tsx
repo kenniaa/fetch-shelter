@@ -1,24 +1,20 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {FaChevronDown, FaSearchLocation} from "react-icons/fa";
-import Input from "../Input";
-import Button from "../Button";
-import DropdownShell from "../DropdownShell";
-import useInput from "../../hooks/useInput";
+import { FaChevronDown, FaSearchLocation } from 'react-icons/fa';
+import Input from '../Input';
+import Button from '../Button';
+import DropdownShell from '../DropdownShell';
+import useInput from '../../hooks/useInput';
 
 interface ZipCodeFilterProps extends React.HTMLAttributes<HTMLElement> {
-  onFilterByZipCode: (zipcode: string) => void,
-  onResetZipCode: () => void,
+  onFilterByZipCode: (zipcode: string) => void;
+  onResetZipCode: () => void;
 }
 
 const ZipCodeFilter = (props: ZipCodeFilterProps) => {
   const zipCodeInput = useInput('');
 
-  const {
-    className,
-    onFilterByZipCode,
-    onResetZipCode
-  } = props;
+  const { className, onFilterByZipCode, onResetZipCode } = props;
 
   return (
     <DropdownShell
@@ -38,23 +34,16 @@ const ZipCodeFilter = (props: ZipCodeFilterProps) => {
         />
 
         <Actions>
-          <Button
-            onClick={() => onResetZipCode()}
-          >
-            Reset filter
-          </Button>
+          <Button onClick={() => onResetZipCode()}>Reset filter</Button>
 
-          <Button
-            primary
-            onClick={() => onFilterByZipCode(zipCodeInput.value)}
-          >
+          <Button primary onClick={() => onFilterByZipCode(zipCodeInput.value)}>
             Show dogs
           </Button>
         </Actions>
       </div>
     </DropdownShell>
   );
-}
+};
 
 const Actions = styled.div`
   display: flex;
@@ -68,6 +57,4 @@ const LocationLabel = styled.div`
   grid-gap: 0.5rem;
 `;
 
-export default styled(ZipCodeFilter)`
-
-`;
+export default styled(ZipCodeFilter)``;

@@ -1,64 +1,59 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import {useContext } from "react";
-import {SearchQueryContext} from "../../contexts/SearchQueryContext";
-import {FaTimes} from "react-icons/fa";
-import Button from "../Button";
+import { useContext } from 'react';
+import { SearchQueryContext } from '../../contexts/SearchQueryContext';
+import { FaTimes } from 'react-icons/fa';
+import Button from '../Button';
 
-interface AppliedFiltersProps extends React.HTMLAttributes<HTMLElement> {
-}
+interface AppliedFiltersProps extends React.HTMLAttributes<HTMLElement> {}
 
 const AppliedFilters = (props: AppliedFiltersProps) => {
   const searchQueryContext = useContext(SearchQueryContext);
 
   const {
     zipCodes,
-    setZipCodes,
-    sortBy,
-    setSortBy,
-    selectedBreeds
+    // setZipCodes,
+    // sortBy,
+    // setSortBy,
+    selectedBreeds,
   } = searchQueryContext;
 
-  const {
-    className,
-  } = props;
+  const { className } = props;
 
   return (
     <div className={className}>
       Applied Filters:
+      {zipCodes?.map((code) => (
+        <Filter key={code}>
+          {code}
 
-      {zipCodes?.map((code, index) => (
-          <Filter>
-            {code}
-
-            <Button
-                bare
-                // onClick={() => onFilterByZipCode()}
-            >
-              <FaTimes />
-            </Button>
-          </Filter>
+          <Button
+            bare
+            // onClick={() => onFilterByZipCode()}
+          >
+            <FaTimes />
+          </Button>
+        </Filter>
       ))}
+      {selectedBreeds?.map((breed) => (
+        <Filter key={breed}>
+          {breed}
 
-      {selectedBreeds?.map((breed, index) => (
-          <Filter>
-            {breed}
-
-            <Button
-                bare
-                // onClick={() => onRemoveOption(option)}
-            >
-              <FaTimes />
-            </Button>
-          </Filter>
+          <Button
+            bare
+            // onClick={() => onRemoveOption(option)}
+          >
+            <FaTimes />
+          </Button>
+        </Filter>
       ))}
     </div>
   );
-}
+};
 
 const Filter = styled.div`
   background: #424242;
-  color: #FFF;
+  color: #fff;
   padding: 4px 6px;
   border-radius: 6px;
   display: flex;

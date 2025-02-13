@@ -1,4 +1,4 @@
-import nookies from 'nookies'
+import nookies from 'nookies';
 
 const EMPTY_PROPS = { props: {} };
 const REDIRECT_PROPS = {
@@ -6,20 +6,16 @@ const REDIRECT_PROPS = {
     destination: '/login',
     permanent: false,
   },
-}
-
-const createSessionBounder = () => {
-  return function (ctx) {
-    const {'AWSALB': sessionToken} = nookies.get(ctx);
-
-    if (!sessionToken) {
-      console.error('No token found-- redirecting');
-      return REDIRECT_PROPS;
-    }
-
-    console.info('Token found', sessionToken);
-    return EMPTY_PROPS;
-  };
 };
 
-export const bounceUnlessLoggedIn = createSessionBounder();
+export const bounceUnlessLoggedIn = (ctx) => {
+  const { isLoggedIn: sessionToken } = nookies.get(ctx);
+
+  if (!sessionToken) {
+    console.error('No token found-- redirecting');
+    return REDIRECT_PROPS;
+  }
+
+  console.info('Token found', sessionToken);
+  return EMPTY_PROPS;
+};

@@ -1,28 +1,25 @@
 import * as React from 'react';
-import SlideOutPanel from "./SlideOutPanel";
-import {SlideOutPanelContext} from "../../contexts/SlideOutPanelContext";
-import {useContext, useState} from "react";
-import {FavoritesContext} from "../../contexts/FavoritesContext";
-import DogCardGroup from "../DogCardGroup";
-import Button from "../Button";
-import createMatch from "../../rest/dogs/createMatch";
+import SlideOutPanel from './SlideOutPanel';
+import { SlideOutPanelContext } from '../../contexts/SlideOutPanelContext';
+import { useContext, useState } from 'react';
+import { FavoritesContext } from '../../contexts/FavoritesContext';
+import DogCardGroup from '../DogCardGroup';
+import Button from '../Button';
+import createMatch from '../../rest/dogs/createMatch';
+import styled from 'styled-components';
 
 interface FavoritesPanelProps extends React.HTMLAttributes<HTMLDivElement> {
-  panelName: string
+  panelName: string;
 }
 
 const FavoritesPanel = (props: FavoritesPanelProps) => {
-  const panelContext: any = useContext(SlideOutPanelContext);
+  const panelContext = useContext(SlideOutPanelContext);
   const favoritesContext = useContext(FavoritesContext);
   const [match, setMatch] = useState<string>('');
 
-  const {
-    favorites
-  } = favoritesContext;
+  const { favorites } = favoritesContext;
 
-  const {
-    panelName
-  } = props;
+  const { panelName } = props;
 
   const handleMatch = async () => {
     try {
@@ -38,7 +35,7 @@ const FavoritesPanel = (props: FavoritesPanelProps) => {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   return (
     <SlideOutPanel
@@ -48,23 +45,54 @@ const FavoritesPanel = (props: FavoritesPanelProps) => {
         panelContext?.hidePanel(panelName);
       }}
     >
-      FAVORITES:
-      <DogCardGroup
-        itemIds={favorites}
-      />
+      {!!favorites?.length ? (
+        <>
+          <div>
+            Add more favorites or click &quot;Generate Match&quot; to see the
+            perfect dog for you!
+          </div>
 
-      <Button
-        primary
-        onClick={() => handleMatch()}
-      >
-        Match me with a dog
-      </Button>
+          <Center>
+            <Button primary onClick={() => handleMatch()}>
+              Match me with a dog
+            </Button>
+          </Center>
 
-      {match &&
-        <DogCardGroup itemIds={[match]}/>
-      }
+          {match && (
+            <Match>
+              Meet your fur-ever dog:
+              <DogCardGroup noEditing itemIds={[match]} />
+            </Match>
+          )}
+
+          <DogCardGroup smallCards itemIds={favorites} />
+        </>
+      ) : (
+        <div>
+          Go to the search page and favorite some dogs, then come here to
+          generate a match!
+        </div>
+      )}
+
+      <Center>
+        <Button onClick={() => panelContext.hidePanel(panelName)}>
+          Go back to search page
+        </Button>
+      </Center>
     </SlideOutPanel>
   );
 };
+
+const Match = styled.div`
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #555;
+`;
+
+const Center = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+`;
 
 export default FavoritesPanel;

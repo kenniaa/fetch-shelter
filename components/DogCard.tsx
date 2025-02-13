@@ -1,88 +1,89 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { Dog } from '../lib/dataModels';
-import Image from 'next/image'
-import {useContext} from "react";
-import {FavoritesContext} from "../contexts/FavoritesContext";
-import { FaHeart, FaDog, FaMapMarkerAlt, FaRegHeart, FaBirthdayCake} from "react-icons/fa";
+import Image from 'next/image';
+import { useContext } from 'react';
+import { FavoritesContext } from '../contexts/FavoritesContext';
+import {
+  FaHeart,
+  FaDog,
+  FaMapMarkerAlt,
+  FaRegHeart,
+  FaBirthdayCake,
+} from 'react-icons/fa';
+import { SlideOutPanelContext } from '../contexts/SlideOutPanelContext';
 
 interface CardProps extends React.HTMLAttributes<HTMLElement> {
-  item: Dog
+  item: Dog;
+  noEditing?: boolean;
 }
 
 const DogCard = (props: CardProps) => {
   const favoritesContext = useContext(FavoritesContext);
+  const panelContext = useContext(SlideOutPanelContext);
+  const panelName = 'favorites-panel';
 
-  const {
-    favorites,
-    setFavorites
-  } = favoritesContext;
+  const { favorites, setFavorites } = favoritesContext;
 
-  const {
-    className,
-    item,
-  } = props;
-  
-  const isInFavorites= favorites.includes(item.id);
+  const { className, item, noEditing } = props;
+
+  const isInFavorites = favorites.includes(item.id);
 
   const handleFavoriteClick = () => {
     if (favorites.includes(item.id)) {
-      setFavorites(favorites.filter(favorite => favorite !== item.id));
+      setFavorites(
+        favorites.filter((favorite: string) => favorite !== item.id),
+      );
       return;
     }
 
     setFavorites([...favorites, item.id]);
-  }
+    panelContext.showPanel(panelName);
+  };
 
   const getAge = (age) => {
     if (age < 1) {
-      return 'Under 1 year old'
+      return 'Under 1 year old';
     }
 
     if (age === 1) {
-      return '1 year old'
+      return '1 year old';
     }
 
-    return `${age} years old`
-  }
+    return `${age} years old`;
+  };
 
   return (
-    <li
-      className={className}
-    >
+    <li className={className}>
       <CardMain>
         <Image
           width={500}
           height={500}
           sizes='100vw'
           style={{
-           width: '100%',
-           height: '300px',
-           maxHeight: '300px',
-           objectFit: 'cover',
-           borderRadius: '6px',
+            width: '100%',
+            height: '300px',
+            maxHeight: '300px',
+            objectFit: 'cover',
+            borderRadius: '6px',
           }}
           src={item.img}
           alt={`Picture of ${item.name}`}
         />
 
-        <Favorite
-          onClick={() => handleFavoriteClick()}
-          isInFavorites={isInFavorites}
-          aria-label='Bookmark item'
-        >
-           {isInFavorites ?
-             <FaHeart fill='Red' />
-             :
-             <FaRegHeart />
-           }
-        </Favorite>
+        {!noEditing && (
+          <Favorite
+            onClick={() => handleFavoriteClick()}
+            isInFavorites={isInFavorites}
+            aria-label='Bookmark item'
+          >
+            {isInFavorites ? <FaHeart fill='Red' /> : <FaRegHeart />}
+          </Favorite>
+        )}
       </CardMain>
 
       <CardInfo>
-        <Name>
-          {item.name}
-        </Name>
+        <Name>{item.name}</Name>
 
         <Details>
           <DetailBox>
@@ -100,7 +101,7 @@ const DogCard = (props: CardProps) => {
       </CardInfo>
     </li>
   );
-}
+};
 
 const Details = styled.div`
   margin-top: 0.5rem;
@@ -109,40 +110,32 @@ const Details = styled.div`
   grid-gap: 0.5rem;
 `;
 
-const DetailBox= styled.div`
+const DetailBox = styled.div`
   background: rgba(68, 68, 68, 0.65);
   color: #cccccc;
   border: 1px solid #555;
-  padding: 0 4px;
+  padding: 4px;
   border-radius: 4px;
-  width: max-content;
+  width: auto;
   display: flex;
   align-items: center;
   grid-gap: 0.25rem;
 `;
 
-const CardHeader = styled.div`
-  border-radius: 4px;
-  width: auto;
-  padding: 0 0.25em;
-  display: flex;
-  align-items: baseline;
-`;
-
 const Name = styled.div`
-  font-size: 20px
+  font-size: 20px;
 `;
 
 interface FavoriteProps {
-  isInFavorites?: boolean,
-  onClick?: any
+  isInFavorites?: boolean;
+  onClick?: React.MouseEventHandler;
 }
 
 const Favorite = styled.button<FavoriteProps>`
   border-radius: 99px;
-  height: 2em;
-  width: 2em;
-  padding: 0.5em;
+  height: 2rem;
+  width: 2rem;
+  padding: 0.5rem;
   justify-content: center;
   align-items: center;
   align-self: center;
@@ -153,7 +146,7 @@ const Favorite = styled.button<FavoriteProps>`
   z-index: 4;
   box-shadow: none;
   border: none;
-  transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.275);
+  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transition-duration: 400ms;
 `;
 
@@ -171,6 +164,6 @@ const CardInfo = styled.div`
 
 export default styled(DogCard)`
   background: #212121;
-  padding: 0.75em;
+  padding: 0.75rem;
   border-radius: 6px;
 `;

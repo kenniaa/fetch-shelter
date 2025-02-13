@@ -1,17 +1,18 @@
-import * as React from 'react'
-import { useEffect, useRef } from 'react'
+import { RefObject, useEffect, useRef } from 'react';
 
-export const useFocusTrap = <Element extends HTMLElement = HTMLDivElement>(stateOfComponent: boolean): React.RefObject<Element> => {
-  const ref = useRef<Element>(null)
+export const useFocusTrap = (
+  stateOfComponent: boolean,
+): RefObject<HTMLDivElement | null> => {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (ref.current) {
-      return setUpFocusTrap(ref.current as HTMLElement)
+      return setUpFocusTrap(ref.current);
     }
-  }, [stateOfComponent])
+  }, [stateOfComponent]);
 
-  return ref
-}
+  return ref || null;
+};
 
 const FOCUSABLE_ELEMENTS = [
   'input:not([disabled]):not([tabindex="-1"])',
@@ -20,50 +21,54 @@ const FOCUSABLE_ELEMENTS = [
   'button:not([disabled]):not([tabindex="-1"])',
   '[href]:not([tabindex="-1"])',
   '[tabindex]:not([tabindex="-1"])',
-]
+];
 
-function isVisible(element: HTMLElement) {
+function isVisible(element: HTMLDivElement) {
   return Boolean(
     element.offsetWidth ||
-    element.offsetHeight ||
-    element.getClientRects().length
-  )
+      element.offsetHeight ||
+      element.getClientRects().length,
+  );
 }
 
 function isTabKeyPressed(event: KeyboardEvent) {
-  return event.key === 'Tab'
+  return event.key === 'Tab';
 }
 
-function getFocusableElements(trappedElement: HTMLElement): HTMLElement[] {
+function getFocusableElements(
+  trappedElement: HTMLDivElement,
+): HTMLDivElement[] {
   const focusableElements = Array.prototype.slice.call(
-    trappedElement.querySelectorAll(FOCUSABLE_ELEMENTS.join())
-  )
-  const visibleFocusableElements = focusableElements.filter(isVisible)
+    trappedElement.querySelectorAll(FOCUSABLE_ELEMENTS.join()),
+  );
+  const visibleFocusableElements = focusableElements.filter(isVisible);
 
   if (visibleFocusableElements.length === 0) {
     throw new TypeError(
-      'There are no focusable elements in the trapped element provided'
-    )
+      'There are no focusable elements in the trapped element provided',
+    );
   }
 
-  return visibleFocusableElements
+  return visibleFocusableElements;
 }
 
-function setUpFocusTrap(trappedElement: HTMLElement): (element?: HTMLElement, element2?: HTMLElement) => void {
-  const lastActiveElement = document.activeElement as HTMLElement
-  const focusableElements = getFocusableElements(trappedElement)
-  const firstFocusableElement = focusableElements[0]
-  const lastFocusableElement = focusableElements[focusableElements.length - 1]
+function setUpFocusTrap(
+  trappedElement: HTMLDivElement,
+): (element?: HTMLDivElement, element2?: HTMLDivElement) => void {
+  const lastActiveElement = document.activeElement as HTMLDivElement;
+  const focusableElements = getFocusableElements(trappedElement);
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
   const keyDownEventHandler = getKeyDownEventHandler(
     firstFocusableElement,
-    lastFocusableElement
-  )
+    lastFocusableElement,
+  );
 
   // Engage focus trap.
-  trappedElement.addEventListener('keydown', keyDownEventHandler)
+  trappedElement.addEventListener('keydown', keyDownEventHandler);
 
   if (firstFocusableElement) {
-    firstFocusableElement.focus()
+    firstFocusableElement.focus();
   }
 
   // Return a callback that allows to disengage the focus trap
@@ -71,30 +76,37 @@ function setUpFocusTrap(trappedElement: HTMLElement): (element?: HTMLElement, el
   return getDisengageFocusTrapCallback(
     trappedElement,
     keyDownEventHandler,
-    lastActiveElement
-  )
+    lastActiveElement,
+  );
 }
 
-function getKeyDownEventHandler(firstElement: HTMLElement, lastElement: HTMLElement) {
+function getKeyDownEventHandler(
+  firstElement: HTMLDivElement,
+  lastElement: HTMLDivElement,
+) {
   return function (event: KeyboardEvent) {
-    if (!isTabKeyPressed(event)) return
+    if (!isTabKeyPressed(event)) return;
 
     if (event.shiftKey && document.activeElement === firstElement) {
-      event.preventDefault()
-      lastElement.focus()
+      event.preventDefault();
+      lastElement.focus();
     } else if (!event.shiftKey && document.activeElement === lastElement) {
-      event.preventDefault()
-      firstElement.focus()
+      event.preventDefault();
+      firstElement.focus();
     }
-  }
+  };
 }
 
-function getDisengageFocusTrapCallback(trappedElement: HTMLElement, keyDownEventHandler: (event: KeyboardEvent) => void, lastActiveElement: HTMLElement) {
+function getDisengageFocusTrapCallback(
+  trappedElement: HTMLDivElement,
+  keyDownEventHandler: (event: KeyboardEvent) => void,
+  lastActiveElement: HTMLDivElement,
+) {
   return function () {
-    trappedElement.removeEventListener('keydown', keyDownEventHandler)
+    trappedElement.removeEventListener('keydown', keyDownEventHandler);
 
     if (lastActiveElement) {
-      lastActiveElement.focus()
+      lastActiveElement.focus();
     }
-  }
+  };
 }
