@@ -2,29 +2,34 @@ import * as React from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import Footer from './Footer';
+import { useContext } from 'react';
+import { ErrorsContext } from '../contexts/ErrorContext';
 
 interface PageProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
 }
 
 const Page = (props: PageProps) => {
-  const {
-    className,
-    children
-  } = props;
+  const errorContext = useContext(ErrorsContext);
+
+  const { ErrorNotification } = errorContext;
+
+  const { className, children } = props;
 
   return (
     <Article>
-      <Header/>
+      <Header />
 
       <section className={className}>
+        <ErrorNotification />
+
         {children}
       </section>
 
-      <Footer/>
+      <Footer />
     </Article>
   );
-}
+};
 
 const Article = styled.article`
   display: flex;

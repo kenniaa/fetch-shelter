@@ -1,9 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import getDogInfo from '../rest/dogs/getDogInfo';
 import DogCard from './DogCard';
 import { Dog } from '../lib/dataModels';
+import { ErrorsContext } from '../contexts/ErrorContext';
+import { v4 as uuidv4 } from 'uuid';
 
 interface CardGroupProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
@@ -13,8 +15,12 @@ interface CardGroupProps extends React.HTMLAttributes<HTMLElement> {
   noEditing?: boolean;
 }
 
+const fetchErrorId = uuidv4();
+
 const DogCardGroup = (props: CardGroupProps) => {
   const [items, setItems] = useState<Dog[]>([]);
+  const errorContext = useContext(ErrorsContext);
+  const { handleAddError } = errorContext;
 
   const { className, itemIds, noEditing } = props;
 
@@ -27,14 +33,21 @@ const DogCardGroup = (props: CardGroupProps) => {
       const resp = await getDogInfo(itemIds);
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: fetchErrorId,
+        });
         return;
       }
 
       const dogs = await resp.json();
       setItems(dogs);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
+      handleAddError({
+        message: error,
+        id: fetchErrorId,
+      });
     }
   };
 

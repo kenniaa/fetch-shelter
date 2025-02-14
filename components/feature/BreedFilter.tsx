@@ -5,15 +5,20 @@ import { useContext, useEffect, useState } from 'react';
 import getDogBreeds from '../../rest/dogs/getDogBreeds';
 import FilterDropdown from '../FilterDropdown';
 import { SearchQueryContext } from '../../contexts/SearchQueryContext';
+import { v4 as uuidv4 } from 'uuid';
+import { ErrorsContext } from '../../contexts/ErrorContext';
 
 interface BreedFilterProps extends React.HTMLAttributes<HTMLElement> {
   onSearchByBreed: (selectedBreeds: string[]) => void;
 }
 
+const fetchErrorId = uuidv4();
+
 const BreedFilter = (props: BreedFilterProps) => {
   const searchQueryContext = useContext(SearchQueryContext);
   const [dogBreeds, setDogBreeds] = useState<string[]>([]);
-
+  const errorContext = useContext(ErrorsContext);
+  const { handleAddError } = errorContext;
   const { className, onSearchByBreed } = props;
 
   const { selectedBreeds, setSelectedBreeds } = searchQueryContext;
@@ -27,14 +32,21 @@ const BreedFilter = (props: BreedFilterProps) => {
       const resp = await getDogBreeds();
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: fetchErrorId,
+        });
         return;
       }
 
       const breeds = await resp.json();
       setDogBreeds(breeds);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
+      handleAddError({
+        message: error,
+        id: fetchErrorId,
+      });
     }
   };
 

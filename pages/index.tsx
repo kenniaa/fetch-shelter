@@ -19,18 +19,22 @@ import loadNext from '../rest/pagination/loadNext';
 import loadPrev from '../rest/pagination/loadPrev';
 import AppliedFilters from '../components/feature/AppliedFilters';
 import { bounceUnlessLoggedIn } from '../lib/bounce';
+import { ErrorsContext, ErrorsContextProvider } from '../contexts/ErrorContext';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getServerSideProps = bounceUnlessLoggedIn;
 
 export default function WrappedIndex() {
   return (
-    <SearchQueryContextProvider>
-      <FavoritesContextProvider>
-        <SlideOutPanelContextProvider>
-          <Index />
-        </SlideOutPanelContextProvider>
-      </FavoritesContextProvider>
-    </SearchQueryContextProvider>
+    <ErrorsContextProvider>
+      <SearchQueryContextProvider>
+        <FavoritesContextProvider>
+          <SlideOutPanelContextProvider>
+            <Index />
+          </SlideOutPanelContextProvider>
+        </FavoritesContextProvider>
+      </SearchQueryContextProvider>
+    </ErrorsContextProvider>
   );
 }
 
@@ -73,8 +77,21 @@ const sortOptions = [
   },
 ];
 
+const searchErrorId = uuidv4();
+const loadNextErrorId = uuidv4();
+const loadPrevErrorId = uuidv4();
+
+interface ResponseObject {
+  resultIds: string[];
+  next: string;
+  prev: string;
+  total: number;
+}
+
 function Index() {
   const searchQueryContext = useContext(SearchQueryContext);
+  const errorContext = useContext(ErrorsContext);
+  const { handleAddError } = errorContext;
 
   const [results, setResults] = useState<string[]>([]);
   const [next, setNext] = useState<string>('');
@@ -101,14 +118,21 @@ function Index() {
       });
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: searchErrorId,
+        });
+
         return;
       }
 
       parseResponse(await resp.json());
     } catch (error) {
       console.error(error);
-      //TODO: handle error
+      handleAddError({
+        message: error,
+        id: searchErrorId,
+      });
     }
   };
 
@@ -132,14 +156,20 @@ function Index() {
       const resp = await loadNext(next);
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: loadNextErrorId,
+        });
         return;
       }
 
       parseResponse(await resp.json());
     } catch (error) {
       console.error(error);
-      //TODO: handle error
+      handleAddError({
+        message: error,
+        id: loadNextErrorId,
+      });
     }
   };
 
@@ -148,18 +178,24 @@ function Index() {
       const resp = await loadPrev(prev);
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: loadPrevErrorId,
+        });
         return;
       }
 
       parseResponse(await resp.json());
     } catch (error) {
       console.error(error);
-      //TODO: handle error
+      handleAddError({
+        message: error,
+        id: loadPrevErrorId,
+      });
     }
   };
 
-  const parseResponse = (response) => {
+  const parseResponse = (response: ResponseObject) => {
     const { resultIds, next: newNext, prev: newPrev, total } = response;
 
     setResults(resultIds);

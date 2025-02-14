@@ -8,15 +8,20 @@ import { SlideOutPanelContext } from '../contexts/SlideOutPanelContext';
 import { destroyCookie, parseCookies } from 'nookies';
 import { useRouter } from 'next/router';
 import logoutUser from '../rest/auth/logoutUser';
+import { v4 as uuidv4 } from 'uuid';
+import { ErrorsContext } from '../contexts/ErrorContext';
 
 interface HeaderProps extends React.HTMLAttributes<HTMLElement> {}
+
+const logOutErrorId = uuidv4();
 
 const Header = (props: HeaderProps) => {
   const router = useRouter();
   const panelContext = useContext(SlideOutPanelContext);
   const panelName = 'favorites-panel';
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const errorContext = useContext(ErrorsContext);
+  const { handleAddError } = errorContext;
   const { className } = props;
 
   useEffect(() => {
@@ -29,7 +34,12 @@ const Header = (props: HeaderProps) => {
       const resp = await logoutUser();
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: logOutErrorId,
+        });
+
+        return;
       }
 
       destroyCookie(null, 'isLoggedIn');
@@ -37,7 +47,10 @@ const Header = (props: HeaderProps) => {
       await router.push('/login');
     } catch (error) {
       console.error(error);
-      //TODO: handle error
+      handleAddError({
+        message: error,
+        id: logOutErrorId,
+      });
     }
   };
 

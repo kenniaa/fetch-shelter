@@ -7,16 +7,21 @@ import DogCardGroup from '../DogCardGroup';
 import Button from '../Button';
 import createMatch from '../../rest/dogs/createMatch';
 import styled from 'styled-components';
+import { v4 as uuidv4 } from 'uuid';
+import { ErrorsContext } from '../../contexts/ErrorContext';
 
 interface FavoritesPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   panelName: string;
 }
 
+const matchErrorId = uuidv4();
+
 const FavoritesPanel = (props: FavoritesPanelProps) => {
   const panelContext = useContext(SlideOutPanelContext);
   const favoritesContext = useContext(FavoritesContext);
   const [match, setMatch] = useState<string>('');
-
+  const errorContext = useContext(ErrorsContext);
+  const { handleAddError } = errorContext;
   const { favorites } = favoritesContext;
 
   const { panelName } = props;
@@ -26,14 +31,22 @@ const FavoritesPanel = (props: FavoritesPanelProps) => {
       const resp = await createMatch(favorites);
 
       if (!resp.ok) {
-        //TODO: handle error
+        handleAddError({
+          message: 'Something went wrong, try again',
+          id: matchErrorId,
+        });
+
         return;
       }
 
       const respObj = await resp.json();
       setMatch(respObj.match);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
+      handleAddError({
+        message: error,
+        id: matchErrorId,
+      });
     }
   };
 
