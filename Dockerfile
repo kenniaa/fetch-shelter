@@ -8,7 +8,6 @@ RUN npm i
 
 # Build
 COPY pages ./pages
-COPY public ./public
 COPY components ./components
 COPY hooks ./hooks
 COPY contexts ./contexts
