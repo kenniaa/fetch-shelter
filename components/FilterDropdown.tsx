@@ -46,8 +46,6 @@ const FilterDropdown = (props: FilterDropdownProps) => {
     onSearch,
   } = props;
 
-  // const isOptionSelected = (option: string) => selectedOptions.includes(option)
-
   const filteredItems = useMemo(() => {
     return options.filter((item) => {
       return (

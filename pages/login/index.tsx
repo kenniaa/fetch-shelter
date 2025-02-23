@@ -12,6 +12,9 @@ import {
   ErrorsContextProvider,
 } from '../../contexts/ErrorContext';
 import { v4 as uuidv4 } from 'uuid';
+import { bounceUnlessLoggedOut } from '../../lib/bounce';
+
+export const getServerSideProps = bounceUnlessLoggedOut;
 
 export default function WrappedLogin() {
   return (
@@ -46,7 +49,7 @@ function Login() {
       }
 
       setCookie(null, 'isLoggedIn', 'true', {
-        maxAge: 30 * 24 * 60 * 60,
+        maxAge: 36000,
         path: '/',
       });
 

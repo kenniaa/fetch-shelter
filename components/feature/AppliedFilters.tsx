@@ -2,51 +2,21 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { useContext } from 'react';
 import { SearchQueryContext } from '../../contexts/SearchQueryContext';
-import { FaTimes } from 'react-icons/fa';
-import Button from '../Button';
 
 interface AppliedFiltersProps extends React.HTMLAttributes<HTMLElement> {}
 
 const AppliedFilters = (props: AppliedFiltersProps) => {
   const searchQueryContext = useContext(SearchQueryContext);
 
-  const {
-    zipCodes,
-    // setZipCodes,
-    // sortBy,
-    // setSortBy,
-    selectedBreeds,
-  } = searchQueryContext;
+  const { zipCodes, selectedBreeds } = searchQueryContext;
 
   const { className } = props;
 
   return (
     <div className={className}>
       Applied Filters:
-      {zipCodes?.map((code) => (
-        <Filter key={code}>
-          {code}
-
-          <Button
-            bare
-            // onClick={() => onFilterByZipCode()}
-          >
-            <FaTimes />
-          </Button>
-        </Filter>
-      ))}
-      {selectedBreeds?.map((breed) => (
-        <Filter key={breed}>
-          {breed}
-
-          <Button
-            bare
-            // onClick={() => onRemoveOption(option)}
-          >
-            <FaTimes />
-          </Button>
-        </Filter>
-      ))}
+      {zipCodes?.map((code) => <Filter key={code}>{code}</Filter>)}
+      {selectedBreeds?.map((breed) => <Filter key={breed}>{breed}</Filter>)}
     </div>
   );
 };

@@ -18,10 +18,11 @@ interface CardProps extends React.HTMLAttributes<HTMLElement> {
   noEditing?: boolean;
 }
 
+const panelName = 'favorites-panel';
+
 const DogCard = (props: CardProps) => {
   const favoritesContext = useContext(FavoritesContext);
   const panelContext = useContext(SlideOutPanelContext);
-  const panelName = 'favorites-panel';
 
   const { favorites, setFavorites } = favoritesContext;
 

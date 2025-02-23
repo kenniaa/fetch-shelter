@@ -93,4 +93,4 @@ const BreedLabel = styled.div`
   grid-gap: 0.5rem;
 `;
 
-export default styled(BreedFilter)``;
+export default BreedFilter;
